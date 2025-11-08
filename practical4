@@ -1,0 +1,174 @@
+class Node:
+    def __init__(self, key):
+        self.key = key
+        self.left = None
+        self.right = None
+
+
+class BinarySearchTree:
+    def __init__(self):
+        self.root = None
+
+    # 1. Insert (Handle insertion of duplicate entry)
+    def insert(self, key):
+        if self.root is None:
+            self.root = Node(key)
+        else:
+            self._insert_recursive(self.root, key)
+
+    def _insert_recursive(self, node, key):
+        if key <= node.key:  # duplicates go to left subtree
+            if node.left is None:
+                node.left = Node(key)
+            else:
+                self._insert_recursive(node.left, key)
+        else:
+            if node.right is None:
+                node.right = Node(key)
+            else:
+                self._insert_recursive(node.right, key)
+
+    # 2. Delete
+    def delete(self, key):
+        self.root = self._delete_recursive(self.root, key)
+
+    def _delete_recursive(self, node, key):
+        if node is None:
+            return node
+
+        if key < node.key:
+            node.left = self._delete_recursive(node.left, key)
+        elif key > node.key:
+            node.right = self._delete_recursive(node.right, key)
+        else:
+            # Node with only one child or no child
+            if node.left is None:
+                return node.right
+            elif node.right is None:
+                return node.left
+
+            # Node with two children: Get the inorder successor (smallest in right subtree)
+            temp = self._min_value_node(node.right)
+            node.key = temp.key
+            node.right = self._delete_recursive(node.right, temp.key)
+        return node
+
+    def _min_value_node(self, node):
+        current = node
+        while current.left is not None:
+            current = current.left
+        return current
+
+    # 3. Search
+    def search(self, key):
+        return self._search_recursive(self.root, key)
+
+    def _search_recursive(self, node, key):
+        if node is None or node.key == key:
+            return node
+        if key < node.key:
+            return self._search_recursive(node.left, key)
+        return self._search_recursive(node.right, key)
+
+    # 4. Display tree (Inorder traversal)
+    def display_inorder(self):
+        result = []
+        self._inorder_traversal(self.root, result)
+        print("Inorder Traversal:", result)
+        return result
+
+    def _inorder_traversal(self, node, result):
+        if node:
+            self._inorder_traversal(node.left, result)
+            result.append(node.key)
+            self._inorder_traversal(node.right, result)
+
+    # 5. Display - Depth (height) of tree
+    def get_depth(self):
+        return self._get_depth_recursive(self.root)
+
+    def _get_depth_recursive(self, node):
+        if node is None:
+            return 0
+        left_depth = self._get_depth_recursive(node.left)
+        right_depth = self._get_depth_recursive(node.right)
+        return 1 + max(left_depth, right_depth)
+
+    # 6. Display - Mirror image (in-place)
+    def mirror_tree(self):
+        self._mirror_recursive(self.root)
+
+    def _mirror_recursive(self, node):
+        if node is None:
+            return
+        node.left, node.right = node.right, node.left
+        self._mirror_recursive(node.left)
+        self._mirror_recursive(node.right)
+
+    # 7. Create a copy (deep copy)
+    def create_copy(self):
+        new_bst = BinarySearchTree()
+        new_bst.root = self._copy_recursive(self.root)
+        return new_bst
+
+    def _copy_recursive(self, node):
+        if node is None:
+            return None
+        new_node = Node(node.key)
+        new_node.left = self._copy_recursive(node.left)
+        new_node.right = self._copy_recursive(node.right)
+        return new_node
+
+    # 8. Display all parent nodes with their child nodes
+    def display_parents_with_children(self):
+        print("Parent nodes with their children:")
+        self._display_parents_with_children_recursive(self.root)
+
+    def _display_parents_with_children_recursive(self, node):
+        if node is None:
+            return
+        if node.left or node.right:
+            print(f"Parent: {node.key}", end=" ")
+            if node.left:
+                print(f"Left Child: {node.left.key}", end=" ")
+            if node.right:
+                print(f"Right Child: {node.right.key}", end=" ")
+            print()
+        self._display_parents_with_children_recursive(node.left)
+        self._display_parents_with_children_recursive(node.right)
+
+    # 9. Display leaf nodes
+    def display_leaf_nodes(self):
+        print("Leaf nodes:", end=" ")
+        self._display_leaf_nodes_recursive(self.root)
+        print()
+
+    def _display_leaf_nodes_recursive(self, node):
+        if node is None:
+            return
+        if node.left is None and node.right is None:
+            print(node.key, end=" ")
+        self._display_leaf_nodes_recursive(node.left)
+        self._display_leaf_nodes_recursive(node.right)
+
+    # 10. Display tree level wise (Breadth-First Traversal)
+    def display_level_wise(self):
+        if self.root is None:
+            print("Tree is empty.")
+            return
+
+        queue = [self.root]
+        level = 0
+        print("Tree Level Wise:")
+        while queue:
+            level_nodes = []
+            next_queue = []
+            for node in queue:
+                level_nodes.append(node.key)
+                if node.left:
+                    next_queue.append(node.left)
+                if node.right:
+                    next_queue.append(node.right)
+            print(f"Level {level}: {level_nodes}")
+            queue = next_queue
+            level += 1
