@@ -1,0 +1,130 @@
+#include <iostream>
+#include <cstring>
+using namespace std;
+
+int main()
+{
+const int MAX = 100; // maximum number of students int ids[MAX];
+char names[MAX][50];
+float cgpas[MAX];
+int n = 0; // number of students int choice;
+do {
+cout << "\nMenu:\n";
+cout << "1. Add Student\n";
+cout << "2. Display Students\n";
+cout << "3. Linear Search by ID\n";
+cout << "4. Sort by Name (Bubble Sort)\n"; 
+cout << "5. Sort by CGPA (Selection Sort)\n";
+cout << "6. Exit\n";
+cout << "Enter your choice: "; 
+cin >> choice;
+if (choice == 1) {
+cout << "Enter ID: ";
+cin >> ids[n];
+cout << "Enter Name: ";
+cin.ignore(); 
+cin.getline(names[n], 50); 
+cout << "Enter CGPA: ";
+cin >> cgpas[n];
+n++;
+}
+
+else if (choice == 2) {
+cout << "\nStudent Records:\n"; 
+for (int i = 0; i < n; i++)
+{
+cout << ids[i] << " | " << names[i] << " | " << cgpas[i] << "\n";
+}
+}
+else if (choice == 3) 
+{
+int searchId;
+cout << "Enter ID to search: ";
+cin >> searchId;
+ 
+bool found = false;
+for (int i = 0; i < n; i++) 
+{ 
+if (ids[i] == searchId)
+{
+cout << "Found: " << names[i] << " | CGPA: " << cgpas[i] << "\n"; found = true;
+break;
+}
+}
+if (!found)
+{
+cout << "Student not found.\n";
+}
+}
+
+else if (choice == 4)
+{
+// Bubble Sort by Name
+for (int i = 0; i < n - 1; i++)
+{
+for (int j = 0; j < n - i - 1; j++)
+{
+if (strcmp(names[j], names[j + 1]) > 0) 
+{
+// Swap name char temp[50];
+strcpy(temp, names[j]); 
+strcpy(names[j], names[j + 1]); 
+strcpy(names[j + 1], temp);
+// Swap id
+int tempId = ids[j]; 
+ids[j] = ids[j + 1]; 
+ids[j + 1] = tempId;
+
+// Swap cgpa
+float tempCgpa = cgpas[j]; 
+cgpas[j] = cgpas[j + 1]; 
+cgpas[j + 1] = tempCgpa;
+}
+}
+}
+cout << "Sorted by Name.\n";
+}
+
+else if (choice == 5) {
+// Selection Sort by CGPA (Descending) 
+for (int i = 0; i < n - 1; i++) 
+{
+int maxIdx = i;
+for (int j = i + 1; j < n; j++) 
+{
+if (cgpas[j] > cgpas[maxIdx]) 
+{
+maxIdx = j; 
+}
+}
+
+// Swap CGPA
+float tempCgpa = cgpas[i]; 
+cgpas[i] = cgpas[maxIdx]; 
+cgpas[maxIdx] = tempCgpa;
+
+// Swap ID
+int tempId = ids[i]; 
+ids[i] = ids[maxIdx]; 
+ids[maxIdx] = tempId;
+
+// Swap Name
+char tempName[50]; 
+strcpy(tempName, names[i]); 
+strcpy(names[i], names[maxIdx]); 
+strcpy(names[maxIdx], tempName);
+}
+cout << "Sorted by CGPA.\n";
+}
+else if (choice == 6) 
+{ 
+cout << "Exiting...\n";
+}
+else 
+{
+cout << "Invalid choice. Try again.\n";
+}
+} 
+while (choice != 6);
+return 0;
+}
