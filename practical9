@@ -1,0 +1,42 @@
+class NaiveStringMatcher:
+    def __init__(self, text, pattern):
+        self.text = text
+        self.pattern = pattern
+
+    def search(self):
+        n = len(self.text)
+        m = len(self.pattern)
+        occurrences = []
+
+        print("Matching process:")
+
+        # Slide the pattern over text one by one
+        for i in range(n - m + 1):
+            match = True
+
+            # Check for pattern match at current position
+            for j in range(m):
+                if self.text[i + j] != self.pattern[j]:
+                    match = False
+                    break
+
+            if match:
+                occurrences.append(i)
+                print(f"Pattern found at index {i}")
+
+        # Display results
+        if not occurrences:
+            print("No match found.")
+        else:
+            print("\nAll Occurrences:", occurrences)
+
+        return occurrences
+
+
+# Driver code
+if __name__ == "__main__":
+    text = input("Enter the text string: ")
+    pattern = input("Enter the pattern string: ")
+
+    matcher = NaiveStringMatcher(text, pattern)
+    matcher.search()
