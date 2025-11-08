@@ -1,0 +1,84 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+bool isOperator(char ch) {
+    return (ch == '+' || ch == '-' || ch == '*' || ch == '/' || ch == '^');
+}
+
+int precedence(char ch) {
+    if (ch == '^') return 3;
+    if (ch == '*' || ch == '/') return 2;
+    if (ch == '+' || ch == '-') return 1;
+    return -1;
+}
+
+string convertToPrefix(string &infix) {
+    stack<string> operands;
+    stack<char> operators;
+
+    int n = infix.length();
+
+    for (int i = 0; i < n; i++) {
+
+        // Skip whitespace
+        if (infix[i] == ' ')
+            continue;
+
+        // Opening bracket
+        else if (infix[i] == '(') {
+            operators.push(infix[i]);
+        }
+
+        // Closing bracket
+        else if (infix[i] == ')') {
+            while (!operators.empty() && operators.top() != '(') {
+                string op2 = operands.top(); operands.pop();
+                string op1 = operands.top(); operands.pop();
+                char op = operators.top(); operators.pop();
+
+                string expr = op + op1 + op2;
+                operands.push(expr);
+            }
+            operators.pop(); // remove '('
+        }
+
+        // Operand
+        else if (isalnum(infix[i])) {
+            operands.push(string(1, infix[i]));
+        }
+
+        // Operator
+        else if (isOperator(infix[i])) {
+            while (!operators.empty() &&
+                   precedence(infix[i]) <= precedence(operators.top())) {
+                string op2 = operands.top(); operands.pop();
+                string op1 = operands.top(); operands.pop();
+                char op = operators.top(); operators.pop();
+
+                string expr = op + op1 + op2;
+                operands.push(expr);
+            }
+            operators.push(infix[i]);
+        }
+    }
+
+    // Pop remaining operators
+    while (!operators.empty()) {
+        string op2 = operands.top(); operands.pop();
+        string op1 = operands.top(); operands.pop();
+        char op = operators.top(); operators.pop();
+
+        string expr = op + op1 + op2;
+        operands.push(expr);
+    }
+
+    return operands.top();
+}
+
+// ---------------- Main Function ----------------
+int main() {
+    string s = "(A+B)*(C-D)";
+    cout << "Infix Expression: " << s << endl;
+    cout << "Prefix Expression: " << convertToPrefix(s) << endl;
+    return 0;
+}
