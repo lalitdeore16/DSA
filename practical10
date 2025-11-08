@@ -1,0 +1,79 @@
+# Python Program 10: A* Search on grid (0 = free, 1 = blocked)
+import heapq
+import sys
+
+
+def astar(grid, start, goal):
+    n = len(grid)
+    m = len(grid[0])
+
+    # Heuristic function: Manhattan distance
+    def h(a, b):
+        return abs(a[0] - b[0]) + abs(a[1] - b[1])
+
+    open_set = []
+    heapq.heappush(open_set, (h(start, goal), 0, start))
+    came_from = {}
+    g = {start: 0}
+
+    # 4 possible moves: up, down, left, right
+    directions = [(1, 0), (-1, 0), (0, 1), (0, -1)]
+
+    while open_set:
+        f, current_g, current = heapq.heappop(open_set)
+
+        # If goal is reached, reconstruct path
+        if current == goal:
+            path = []
+            node = current
+            while node in came_from:
+                path.append(node)
+                node = came_from[node]
+            path.append(start)
+            path.reverse()
+            return path, g[goal]
+
+        # Explore neighbors
+        for dx, dy in directions:
+            nx, ny = current[0] + dx, current[1] + dy
+            if 0 <= nx < n and 0 <= ny < m and grid[nx][ny] == 0:
+                tentative_g = g[current] + 1
+                if (nx, ny) not in g or tentative_g < g[(nx, ny)]:
+                    g[(nx, ny)] = tentative_g
+                    came_from[(nx, ny)] = current
+                    heapq.heappush(open_set, (tentative_g + h((nx, ny), goal), tentative_g, (nx, ny)))
+
+    return None, None
+
+
+# ---- Driver Code ----
+if __name__ == "__main__":
+    data = sys.stdin.read().strip().split()
+    if not data:
+        exit()
+
+    it = iter(data)
+    n = int(next(it))
+    m = int(next(it))
+    grid = [[0] * m for _ in range(n)]
+
+    # Read grid matrix
+    for i in range(n):
+        for j in range(m):
+            grid[i][j] = int(next(it))
+
+    # Start and goal coordinates
+    sx = int(next(it))
+    sy = int(next(it))
+    gx = int(next(it))
+    gy = int(next(it))
+
+    path, cost = astar(grid, (sx, sy), (gx, gy))
+
+    if path:
+        print("Path found:")
+        for p in path:
+            print(p)
+        print("Total Cost:", cost)
+    else:
+        print("No path found.")
